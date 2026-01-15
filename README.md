@@ -46,6 +46,16 @@ Giải quyết các bài toán khó, lỗi logic phức tạp và hệ thống l
 2.  **Dự án REST API:** Thực hành xây dựng [Backend chuyên nghiệp](./tutorials/04-real-projects/project-02-rest-api.md).
 3.  **Workflows mẫu:** Sử dụng các [Templates](./templates/) cho công việc hàng ngày của bạn.
 
+### ⚙️ Bước 6: Thiết lập AI cho Dự án Hiện có (Quan trọng!)
+
+Khi bạn đã có dự án riêng, cần "dạy" AI hiểu codebase của bạn.
+
+1.  **Tạo thư mục `.agent`:** Đọc hướng dẫn [Thiết lập .agent cho dự án](./templates/agent-setup/README.md).
+2.  **Sử dụng các templates:** Copy các file mẫu sẵn có:
+    - [project-context.template.md](./templates/agent-setup/project-context.template.md) - Mô tả dự án
+    - [conventions.template.md](./templates/agent-setup/conventions.template.md) - Quy chuẩn code
+    - [progress.template.md](./templates/agent-setup/progress.template.md) - Theo dõi tiến độ
+
 ---
 
 ## 🧰 Thư viện tra cứu nhanh (Cheat Sheet)
@@ -57,8 +67,8 @@ Giải quyết các bài toán khó, lỗi logic phức tạp và hệ thống l
 | **Refactor/Migration** | [Prompts Refactoring](./prompts/refactoring/code-improvement.md)     |
 | **Viết Unit Test**     | [Prompts Testing](./prompts/testing/test-generation.md)              |
 | **Thiết kế hệ thống**  | [Prompts Architecture](./prompts/architecture/system-design.md)      |
+| **Setup AI cho dự án** | [Agent Setup Guide](./templates/agent-setup/README.md)               |
 
 ---
 
 _Lưu ý: AI thay đổi rất nhanh, hãy luôn thực hành và cập nhật các mẫu prompt của riêng bạn vào thư mục `/prompts`._
-# update-skill-agent
