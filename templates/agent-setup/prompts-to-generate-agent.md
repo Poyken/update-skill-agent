@@ -58,252 +58,199 @@ Bộ prompts này được thiết kế để AI có thể **quét codebase hi�
 
 ---
 
-## Prompt 1.1: Tạo `rules/global.md` - Quy tắc chung
+## Prompt 1.1: Tạo `rules/global.md` - Quy tắc cấp độ Hệ thống
 
-**⏱️ Thời gian:** 10 phút | **📄 Target:** 60-80 dòng | **📊 Sections:** 5-7
+**⏱️ Thời gian:** 10-15 phút | **📄 Target:** 80-120 dòng | **📊 Sections:** 6-8
 
-````
-Quét toàn bộ codebase và RÚT RA các quy tắc code đang được tuân thủ THỰC TẾ để tạo file `.agent/rules/global.md`.
+```markdown
+Bạn là một Senior Developer. Hãy quét TOÀN BỘ codebase để rút ra các quy tắc code đang được thực thi trên thực tế (De-facto standards) để tạo file `.agent/rules/global.md`.
 
-**QUAN TRỌNG:** Chỉ ghi những quy tắc BẠN THẤY TRONG CODE, không viết lý thuyết.
+**YÊU CẦU PHÂN TÍCH (Cấm viết lý thuyết):**
 
-**❌ KHÔNG ĐƯỢC:**
-- Viết "should use...", "best practice is...", "it's recommended to..."
-- Tạo rules mà không có evidence file
-- Copy từ documentation chung
+1. **Naming Strategy (Dựa trên 20+ file ngẫu nhiên):**
 
-**Phân tích các yếu tố:**
+   - Pattern đặt tên: Files, Components, Functions, Variables, Constants, Types.
+   - Folder naming: kebab-case, camelCase hay PascalCase?
 
-1. **Naming Conventions (Từ file names và biến):**
-   - Quét 10 file trong src/components/ → rút ra pattern đặt tên
-   - Quét 5 file hooks → xác định prefix (use...)
-   - Quét constants → UPPER_CASE hay camelCase?
+2. **File & Folder Anatomy:**
 
-2. **File Structure (Từ cấu trúc folder):**
-   - Mỗi component có folder riêng hay file đơn?
-   - Có file index.ts barrel exports không?
-   - Test files nằm cạnh source hay folder riêng?
+   - Cấu trúc 1 module chuẩn: Gồm những file nào? (vd: controller, service, rpc, style, test).
+   - Vị trí file test: Cạnh source hay folder tập trung?
 
-3. **TypeScript Patterns (Từ các file .ts/.tsx):**
-   - Có dùng 'any' không? (grep tìm "any")
-   - Interface hay Type được ưu tiên?
-   - Có strict mode không?
+3. **TypeScript & Type System:**
 
-4. **Import/Export Style:**
-   - Phân tích 5 file → thứ tự import như thế nào?
-   - Default export hay named export?
-   - Có path aliases không? (@/, ~/)
+   - Search: "any", "as any", "unknown". Rút ra quy tắc về tính nghiêm ngặt.
+   - Ưu tiên: Interface vs Type? Enum vs Const Object?
 
-5. **Error Handling:**
-   - Tìm các try-catch blocks
-   - Có custom Error class không?
-   - Console.log có được dùng không?
+4. **Import/Export Conventions:**
 
-6. **Git Conventions (từ git log nếu có):**
-   - Format commit message
-   - Branch naming pattern
+   - Phân tích 10 file: Thứ tự import (library -> internal -> styles)?
+   - Xuất: Default export hay Named export? Pattern dùng barrel files (index.ts).
+
+5. **Error & Exception Handling:**
+
+   - Pattern try-catch: Ở tầng nào? Có dùng Custom Error class không?
+   - Logging: Dùng console.log hay library? Pattern log data.
+
+6. **Git/Commit Standards:**
+   - Đọc 10 commit gần nhất: Pattern là gì? (Conventional Commits, Prefix-based?).
+
+**BẮT BUỘC TRONG OUTPUT (Mỗi mục):**
+
+- **Pattern:** [Mô tả chi tiết quy tắc tìm thấy]
+- **Evidence:** `path/to/evidence/file.ts`
+- **Code Snippet:** [1 đoạn code thực tế minh họa quy tắc này]
+
+Nếu không tìm thấy pattern rõ ràng, ghi: `[KHÔNG TÌM THẤY - CẦN USER XÁC NHẬN]`.
+```
 
 **Output Format (BẮT BUỘC theo format này):**
-```markdown
+
+````markdown
 # Quy tắc Code Chung - [Tên Dự Án]
 
 > ⚠️ Các quy tắc này được rút ra từ code hiện có, KHÔNG phải lý thuyết.
 
 ## 1. Naming Conventions
 
-| Loại | Pattern | Evidence File |
-|------|---------|---------------|
-| Components | PascalCase | `src/components/UserCard.tsx` |
-| Hooks | camelCase + use | `src/hooks/useAuth.ts` |
+| Loại       | Pattern         | Evidence File                 |
+| ---------- | --------------- | ----------------------------- |
+| Components | PascalCase      | `src/components/UserCard.tsx` |
+| Hooks      | camelCase + use | `src/hooks/useAuth.ts`        |
 
 **Ví dụ code thực tế:**
+
 ```tsx
 // Từ src/components/UserCard.tsx
 export function UserCard({ user }: UserCardProps) { ... }
 ```
+````
 
 ## 2. File Organization
+
 [Tương tự với evidence + example]
 
 ...
-```
-````
+
+`````
 
 ---
 
-## Prompt 1.2: Tạo `rules/ui-components.md` - Quy tắc UI
+## Prompt 1.2: Tạo `rules/ui-components.md` - Quy tắc UI & UX
 
-**⏱️ Thời gian:** 8 phút | **📄 Target:** 50-70 dòng | **📊 Sections:** 5-6
+**⏱️ Thời gian:** 8-10 phút | **📄 Target:** 60-90 dòng | **📊 Sections:** 5-7
 
-```
+````markdown
+Phân tích sâu folder `src/components/` và `src/pages/` để tạo file `.agent/rules/ui-components.md`. Tập trung vào tính đồng nhất giao diện và trải nghiệm.
 
-Phân tích folder `src/components/` để tạo file `.agent/rules/ui-components.md`.
+**YÊU CẦU PHÂN TÍCH (Dựa trên 10 components phức tạp nhất):**
 
-**❌ KHÔNG ĐƯỢC:** Viết lý thuyết về React/Vue chung. Chỉ viết những gì THẤY trong code.
+1. **Component Design System:**
+   - Cách handle Props: Inline types, Separated types, hay Generic props?
+   - Có dùng HOCs, Render Props hay Composition?
 
-**Kiểm tra:**
+2. **Styling & Rich Aesthetics (QUAN TRỌNG):**
+   - Tailwind/CSS Modules/Styled: Cách đặt tên classes, cách dùng Design Tokens (màu sắc, spacing).
+   - Hover/Active/Focus states: Patterns chung là gì?
+   - Có dùng Gradients, Shadows, hay Animations không? (Mô tả pattern).
 
-1. **Component Structure:**
+3. **Interactions & States:**
+   - Quản lý Local State: useState vs useReducer?
+   - Handle Loading/Empty/Error states: Pattern UI chung (Skeletons, Spinners?).
 
-   - Quét 5 component lớn nhất
-   - Props được định nghĩa thế nào? (interface inline, type riêng, separate file)
-   - Có destructure props không?
-   - Default props xử lý ra sao?
+4. **Accessibility (A11y) & SEO:**
+   - Kiểm tra `aria-` labels, `alt` text, heading hierarchy.
+   - Semantic HTML: Dùng `section`, `article`, `main` hay chỉ `div`?
 
-2. **Styling Approach:**
+5. **Design Patterns UI:**
+   - Cách viết Wrapper components (vd: Layout, Container).
+   - Pattern xử lý Conditional Rendering (&& vs ternary vs Early return).
 
-   - TailwindCSS, CSS Modules, Styled-components, hay inline?
-   - Có design tokens/theme không?
-   - Responsive handling (breakpoints)
-
-3. **State trong Components:**
-
-   - useState được dùng như thế nào?
-   - Có pattern controlled/uncontrolled?
-   - Form handling: React Hook Form, Formik, hay native?
-
-4. **Events & Callbacks:**
-
-   - Naming: onClick, handleClick, hay onXxxClick?
-   - Có useCallback cho optimization không?
-
-5. **Conditional Rendering:**
-
-   - Dùng && hay ternary?
-   - Có early returns không?
-
-6. **Accessibility:**
-   - Có aria-\* attributes không?
-   - Có alt text cho images không?
-   - Keyboard navigation?
-
-**Output:** File rules tập trung vào conventions UI component đã thấy trong code.
-
-```
+**BẮT BUỘC:**
+- Chỉ ghi những gì **BẠN THẤY THỰC TẾ**.
+- Mỗi quy tắc phải có **Evidence File** và **Code Snippet**.
+- Nếu dự án dùng Tailwind, bắt buộc liệt kê các `custom base classes` tìm thấy.
+`````
 
 ---
 
-## Prompt 1.3: Tạo `rules/state-management.md`
+## Prompt 1.3: Tạo `rules/state-management.md` - Quản lý Dữ liệu
 
-```
+**⏱️ Thời gian:** 10 phút | **📄 Target:** 50-80 dòng
 
-Phân tích cách quản lý state trong dự án để tạo `.agent/rules/state-management.md`.
+```markdown
+Hãy phân tích cách dự án quản lý dữ liệu (State) từ Client đến Server để tạo `.agent/rules/state-management.md`.
 
-**Xác định State Solution:**
+**NỘI DUNG CẦN TRÍCH XUẤT:**
 
-- Tìm trong package.json: redux, zustand, jotai, recoil, mobx?
-- Hay chỉ dùng React Context + useState?
-- Server state: React Query, SWR, Apollo?
+1. **Global State Strategy:**
 
-**Nếu có Redux/Zustand:**
+   - Library: Redux (Slice pattern?), Zustand (Store pattern?), Context?
+   - Naming: Actions, Selectors, Stores (vd: `useUserStore` vs `userStore`).
 
-- Cấu trúc store như thế nào?
-- Naming conventions cho actions, selectors
-- Có middleware nào?
+2. **Server State (Remote Data):**
 
-**Nếu dùng React Query:**
+   - Tool: React Query, SWR, Apollo.
+   - Pattern: Có dùng custom hooks cho API gọi không? (vd: `useFetchUsers`).
+   - Caching: Quy tắc `staleTime`, `cacheTime`, `retry` đang được set mặc định là bao nhiêu?
 
-- Custom hooks pattern?
-- Caching strategy?
-- Invalidation logic?
+3. **Persistence & Sync:**
 
-**Context Usage:**
+   - Có lưu state vào LocalStorage/Cookies không? Pattern xử lý là gì?
+   - Cách sync giữa các tabs hoặc các trang.
 
-- Có bao nhiêu Context?
-- Pattern: Provider ở đâu?
-- Có tách read/write context không?
+4. **Logical Separation:**
+   - Tỷ lệ dùng Global state vs Local state. Khi nào dev dự án này chọn Global state?
 
-**Local State Rules:**
-
-- Khi nào dùng useState vs global state?
-- derived state được tính như thế nào?
-
-**Output:** Rules cụ thể dựa trên patterns đã tìm thấy.
-
+**BẮT BUỘC:** Cung cấp Evidence cho từng công nghệ được nhắc tên. Nếu không dùng Library nào, hãy mô tả pattern Context/State truyền thống tìm thấy.
 ```
 
 ---
 
 # ✅ PHẦN 2: CHECKLISTS
 
-## Prompt 2.1: Tạo `checklists/pr-review.md`
-
-````
-
-Dựa trên code patterns và quy chuẩn đã phân tích, tạo checklist review Pull Request tại `.agent/checklists/pr-review.md`.
-
-**Tạo checklist dựa trên THỰC TẾ dự án:**
-
-1. **Từ Naming Conventions đã tìm:**
-
-   - [ ] Tên biến/hàm/file có đúng pattern không?
-
-2. **Từ TypeScript Usage:**
-
-   - [ ] Có dùng 'any' không? (Nếu codebase không dùng any)
-   - [ ] Types có được export đúng chỗ không?
-
-3. **Từ Testing Pattern:**
-
-   - [ ] Có unit test cho logic mới không?
-   - [ ] Test có đúng structure không?
-
-4. **Từ Error Handling:**
-
-   - [ ] API calls có try-catch không?
-   - [ ] Error messages có user-friendly không?
-
-5. **Từ Performance Patterns:**
-
-   - [ ] Có memo/useMemo/useCallback cần thiết không?
-   - [ ] Có unnecessary re-renders không?
-
-6. **Từ Security (nếu có):**
-   - [ ] Có hardcode secrets không?
-   - [ ] Input có được sanitize không?
-
-**Format output:**
+## Prompt 2.1: Tạo `checklists/pr-review.md` - Bộ lọc chất lượng
 
 ```markdown
-# PR Review Checklist - [Tên dự án]
+Hãy tạo một checklist review code cực kỳ nghiêm ngặt tại `.agent/checklists/pr-review.md`. Checklist này phải được xây dựng DỰA TRÊN các rules đã tìm thấy ở `global.md`.
 
-## Trước khi Review
+**CẤU TRÚC PHÂN LOẠI (Bắt buộc):**
 
-- [ ] Branch đã rebase từ develop/main mới nhất
-- [ ] Không có conflict
+1. **🚨 CRITICAL (Chặn Merge):**
 
-## Code Quality
+   - Security: Hardcode secrets, SQL Injection, XSS.
+   - Logic: Race conditions, memory leaks, data loss.
+   - Conventions: Sai cấu trúc thư mục, sai naming core.
 
-- [ ] ...
-````
+2. **⚠️ MAJOR (Cần sửa):**
 
+   - Performance: Re-render không cần thiết, loop API calls.
+   - TypeScript: Dùng `any` bừa bãi, thiếu types cho props.
+   - Styling: Dùng màu/font lạ không có trong Design System.
+
+3. **📝 MINOR (Nhắc nhở):**
+   - Clean Code: Folder quá 3 cấp, function quá 50 dòng.
+   - Documentation: Thiếu JSDoc cho hàm phức tạp, thiếu README cho module mới.
+
+**YÊU CẦU:** Mỗi đầu mục checklist phải đi kèm mô tả ngắn "Tại sao" (Lấy bài học từ chính codebase này).
 ```
 
 ---
 
-## Prompt 2.2: Tạo `checklists/feature-deployment.md`
+## Prompt 2.2: Tạo `checklists/feature-deployment.md` - Checkliste Vận hành
 
-```
+```markdown
+Bạn là một DevOps Engineer. Hãy đọc các file cấu hình (`package.json`, `github/workflows`, `docker-compose.yml`, `ecosystem.config.js`, `.env`) để tạo checklist deploy tại `.agent/checklists/feature-deployment.md`.
 
-Tạo checklist deploy feature mới dựa trên cấu hình CI/CD và thực tế dự án.
+**NỘI DUNG CẦN CÓ:**
 
-**Phân tích:**
+1. **Pre-build:** `npm run lint`, `npm run test`, `check env variables`.
+2. **Build & Build Verification:** Cách verify build artifact thành công.
+3. **Database Migration:** Lệnh chạy migration, lệnh rollback nếu lỗi.
+4. **Environment Check:** Danh sách các ENV bắt buộc phải có cho feature mới.
+5. **Post-deploy:** Smoke test commands, log monitoring commands.
 
-1. Đọc file cấu hình CI/CD (github workflows, gitlab-ci, docker-compose...)
-2. Xem các scripts trong package.json
-3. Tìm các bước build, test, deploy
-
-**Tạo checklist:**
-
-- Pre-deployment checks
-- Build verification
-- Testing requirements
-- Environment variables
-- Database migrations (nếu có)
-- Rollback plan
-
-**Output:** Checklist cụ thể với các commands thật từ dự án.
-
+**YÊU CẦU:** Chèn các LỆNH TERMINAL THỰC TẾ từ dự án vào checklist.
 ```
 
 ---
@@ -342,61 +289,34 @@ Ví dụ nếu là Pose Tracking:
 
 # 🔄 PHẦN 3: WORKFLOWS
 
-## Prompt 3.1: Tạo `workflows/create-new-feature.md`
+## Prompt 3.1: Tạo `workflows/create-new-feature.md` - Quy trình chuẩn
 
-```
-
-Phân tích cấu trúc dự án để tạo workflow tạo feature mới.
-
-**Phân tích:**
-
-1. Cấu trúc folder của 1 feature hiện có (vd: src/features/auth/)
-2. Các files thường có trong 1 feature
-3. Naming patterns
-4. Có generators/scripts sẵn không? (plop, hygen)
-
-**Output Format:**
+**⏱️ Thời gian:** 8-10 phút
 
 ```markdown
-# Workflow: Tạo Feature Mới
+Bạn hãy đóng vai trò là Tech Lead. Phân tích module hoàn thiện nhất trong dự án (ví dụ `src/features/X` hoặc `src/modules/Y`) để tạo workflow tạo tính năng mới tại `.agent/workflows/create-new-feature.md`.
 
-## Bước 1: Tạo folder structure
+**CÁC BƯỚC PHÂN TÍCH:**
 
-Tạo folder `src/features/[feature-name]/` với cấu trúc:
-```
+1. Liệt kê chính xác cấu trúc folder + file của module mẫu.
+2. Identiy "Core Skeleton" của module đó.
+3. Xác định các điểm tích hợp (vd: phải đăng ký ở app.module.ts, thêm route ở router.tsx).
 
-[feature-name]/
-├── index.ts # Exports
-├── [FeatureName].tsx # Main component
-├── hooks/
-│ └── use[FeatureName].ts
-├── components/
-├── types.ts
-└── [feature-name].test.ts
+**NỘI TRÌNH TRONG FILE:**
 
-```
+1. **Step 1: Scaffolding** (Lệnh terminal hoặc cấu trúc folder).
+2. **Step 2: Domain logic & Types** (Template code mẫu rút từ code thật).
+3. **Step 3: UI/API Integration** (Cách kết nối với bên ngoài).
+4. **Step 4: Verification** (Chạy lệnh test/lint cụ thể).
 
-## Bước 2: Tạo types (copy template sau)
-[template thực tế từ code]
-
-## Bước 3: Tạo hook
-[template]
-
-## Bước 4: Tạo component
-[template]
-
-## Bước 5: Export và Register
-- Thêm vào router (nếu là page)
-- Export từ index.ts
-```
-
+**BẮT BUỘC:** Chèn các code templates (boilerplate) rút gọn từ code thật vào workflow để dev có thể khởi đầu nhanh.
 ```
 
 ---
 
 ## Prompt 3.2: Tạo `workflows/fix-bug-flow.md`
 
-```
+`````
 
 Tạo quy trình chuẩn để fix bug dựa trên practices của dự án.
 
@@ -427,7 +347,8 @@ describe('[bug description]', () => {
     // ...
   });
 });
-```
+`````
+
 ````
 
 ## Bước 3: Debug
@@ -465,28 +386,34 @@ Closes #[issue-number]"
 ## Prompt 4.1: Tạo Template cho Component/Module chủ đạo
 
 ````
+
 Xác định LOẠI COMPONENT/MODULE PHỔ BIẾN NHẤT trong dự án và tạo template.
 
 **Bước 1: Thống kê**
+
 - Đếm số lượng components theo loại
 - Xác định pattern chung của loại phổ biến nhất
 
 **Bước 2: Trích xuất template**
+
 - Lấy 1 component "chuẩn" làm gốc
 - Thay các giá trị cụ thể bằng placeholder
 - Giữ nguyên structure, imports, patterns
 
 **Output:**
-```markdown
+
+````markdown
 # Template: [Loại Component]
 
 ## Sử dụng Template này khi:
+
 - [Điều kiện 1]
 - [Điều kiện 2]
 
 ## Template Code
 
 ### File: `[ComponentName].tsx`
+
 ```tsx
 import React from 'react';
 // [import patterns từ dự án]
@@ -504,6 +431,7 @@ export const [ComponentName]: React.FC<[ComponentName]Props> = ({
     // JSX structure pattern
   );
 };
+```
 ````
 
 ### File: `types.ts`
@@ -526,118 +454,38 @@ export const [ComponentName]: React.FC<[ComponentName]Props> = ({
 
 # 🧠 PHẦN 5: SKILLS (Kỹ năng Tư duy cho AI)
 
-## Prompt 5.1: Tạo `skills/review-skill.md`
+## Prompt 5.1: Tạo `skills/review-skill.md` - Tư duy Reviewer
 
-````
-Dựa trên code patterns và common issues trong dự án, tạo hướng dẫn review code.
-
-**Phân tích:**
-1. Tìm các code smells phổ biến trong dự án (search TODO, FIXME, HACK)
-2. Xác định các patterns thường bị vi phạm
-3. Tìm các bugs đã fix gần đây (git log)
-
-**Output:**
 ```markdown
-# Skill: Code Review
+Phân tích lịch sử commits (`git log -n 50`) và các đoạn code có comment `TODO`, `FIXME`, `BUG` để tạo hướng dẫn review code tại `.agent/skills/review-skill.md`.
 
-## Mindset khi Review
-1. Đọc qua toàn bộ diff trước khi comment
-2. Focus vào logic, không nitpick formatting
-3. Đặt câu hỏi thay vì chỉ trích
+**TẬP TRUNG VÀO:**
 
-## Checklist theo thứ tự ưu tiên
+1. **Lịch sử lỗi:** Dự án này hay gặp bug ở đâu? (vd: quên clean-up useEffect, sai logic phân trang).
+2. **Naming Bad Patterns:** Những cách đặt tên nào từng bị refactor hoặc bị comment nhắc nhở?
+3. **Logic Red Flags:** Liệt kê 5 "dấu hiệu nguy hiểm" trong dự án này (vd: gọi API trong loop, deep object nesting).
 
-### Critical (Block PR)
-- [ ] Security vulnerabilities
-- [ ] Data loss risks
-- [ ] Breaking changes không document
-
-### Major
-- [ ] Logic errors
-- [ ] Missing error handling
-- [ ] Performance issues rõ ràng
-
-### Minor
-- [ ] Naming không theo convention
-- [ ] Missing tests
-- [ ] Code duplication
-
-## Red Flags trong dự án này
-(Dựa trên lịch sử bugs)
-- ⚠️ [Pattern thường gây bug 1]
-- ⚠️ [Pattern thường gây bug 2]
-
-## Templates Comment
-- "Có thể giải thích tại sao chọn approach này?"
-- "Đã consider case [X] chưa?"
-````
-
+**MỤC TIÊU:** Skill này giúp AI khi được hỏi "Review code này" sẽ tập trung vào các vấn đề ĐẶC THÙ của dự án thay vì các lời khuyên Clean Code sáo rỗng.
 ```
 
 ---
 
-## Prompt 5.2: Tạo `skills/debug-skill.md`
+## Prompt 5.2: Tạo `skills/debug-skill.md` - Tư duy Thám tử
 
-```
+```markdown
+Hãy trở thành một Debugging Expert. Đọc `package.json` và cấu trúc dự án để tạo `.agent/skills/debug-skill.md`.
 
-Tạo hướng dẫn debug hiệu quả dựa trên tooling và patterns của dự án.
+**CÁC BƯỚC PHÂN TÍCH:**
 
-**Phân tích:**
+1. **Tooling:** Dự án dùng framework test gì? Có library logging nào không?
+2. **Error Pattern:** Tìm cách project trả về error: Dùng Exceptions, Result Objects, hay chỉ `console.error`?
+3. **Data Logging:** Chỉ ra các tệp hoặc dòng code đang thực hiện log dữ liệu "mẫu" để AI biết cách chèn log khi debug.
 
-1. Developer tools đang dùng (Redux DevTools, React DevTools...)
-2. Logging setup
-3. Error tracking (Sentry, LogRocket)
-4. Testing tools
+**MỤC TIÊU:** Khi AI gặp lỗi, nó sẽ kích hoạt Skill này để:
 
-**Output:**
-
-````markdown
-# Skill: Debug Hiệu quả
-
-## Tools có sẵn trong dự án
-
-- [List tools từ devDependencies]
-
-## Debug Flow theo loại Bug
-
-### 1. UI không render đúng
-
-- Check React DevTools → Component props
-- Check CSS → Computed styles
-- Check conditional rendering logic
-
-### 2. State không update
-
-- [Tool] DevTools → State tree
-- Trace action/dispatch
-- Check selectors
-
-### 3. API Error
-
-- Network tab → Request/Response
-- Check error handling trong [file pattern]
-- Verify mock data
-
-### 4. Performance
-
-- React DevTools Profiler
-- Chrome Performance tab
-- Check [common bottlenecks trong dự án]
-
-## Logging Patterns trong dự án
-
-```[language]
-// Cách log đúng chuẩn dự án
-[example từ code]
-```
-````
-
-## Breakpoint Strategies
-
-- Đặt tại [các điểm thường check]
-
-```
-
+- Biết dùng lệnh test nào để reproduce.
+- Biết chèn log vào đâu (theo convention dự án).
+- Biết các lỗi "kinh điển" thường gặp ở dự án này.
 ```
 
 ---
@@ -679,88 +527,119 @@ Phân tích và document kiến trúc hệ thống.
 
 # 🧠 PHẦN 7: MEMORY (Bộ nhớ dài hạn)
 
-## Prompt 7.1: Tạo `memory/project-context.md`
+## Prompt 7.1: Tạo `memory/project-context.md` - Phân tích toàn diện
 
-````
-Tạo file lưu trữ context dự án để AI nhớ giữa các sessions.
+**⏱️ Thời gian:** 10-15 phút | **📄 Target:** 100-150 dòng | **📊 Sections:** 8-10
 
-**Content:**
-
-1. **Đang làm dở:**
-   - Feature hiện tại đang develop
-   - Branch đang active
-   - Blockers nếu có
-
-2. **Lỗi khó đã fix (để không tái phạm):**
-   - Bug description
-   - Root cause
-   - Solution
-   - Lesson learned
-
-3. **Decisions đã đưa ra:**
-   - Tại sao chọn thư viện X thay vì Y
-   - Architecture decisions và lý do
-
-4. **Cần nhớ:**
-   - Quirks của dự án
-   - Workarounds đang dùng
-
-**Output Template:**
 ```markdown
-# Project Memory - [Tên dự án]
+Bạn là một Senior Architect. Hãy phân tích TOÀN BỘ codebase hiện tại để tạo file hoàn chỉnh nhất: `.agent/memory/project-context.md`.
 
-> Cập nhật: [DATE]
+File này phải đóng vai trò là "Single Source of Truth" để bất kỳ AI nào sau này nhìn vào cũng hiểu dự án này là gì, hoạt động ra sao và đang ở đâu.
 
-## 🔄 Đang làm dở
-- **Feature:** [tên]
-- **Branch:** [branch name]
-- **Status:** [mô tả tiến độ]
-- **Next steps:** [việc cần làm tiếp]
+**YÊU CẦU PHÂN TÍCH CHUYÊN SÂU:**
 
-## 🐛 Bugs đã fix (Lessons Learned)
+1. **Project Identity (Tầm nhìn):**
 
-### Bug #1: [Tên bug]
-- **Triệu chứng:** [...]
-- **Nguyên nhân gốc:** [...]
-- **Cách fix:** [...]
-- **Bài học:** [...]
+   - Đọc README.md và Description để hiểu: Dự án này giải quyết bài toán gì? Cho ai?
+   - Xác định Business Domain (Fintech, E-commerce, AI Tool, Health, v.v.).
 
-## 🏗️ Architecture Decisions
+2. **Tech Ecosystem (Hệ sinh thái):**
 
-### Decision 1: [Tên]
-- **Context:** [Bối cảnh khi quyết định]
-- **Options considered:** [Các lựa chọn]
-- **Decision:** [Quyết định cuối]
-- **Rationale:** [Lý do]
+   - Đọc tệp quản lý dependency (`package.json`, `go.mod`, `requirements.txt`, v.v.).
+   - Phân loại: Core Stack, Database, State Management, UI Library, Auth Provider, v.v.
+   - Tìm các "Internal Tools" (tự viết) hoặc Utilities quan trọng.
 
-## ⚠️ Quirks & Workarounds
-- [Điều cần nhớ 1]
-- [Điều cần nhớ 2]
-````
+3. **Architecture Architecture (Kiến trúc):**
 
+   - Phân tích luồng dữ liệu: Client -> API -> Service -> Repo -> DB.
+   - Xác định các Design Patterns đang dùng (Singleton, Factory, Observer, Dependency Injection, v.v.).
+   - Mô tả cách giao tiếp giữa các thành phần (REST, GraphQL, WebSockets, gRPC).
+
+4. **Logical Domains (Module nghiệp vụ):**
+
+   - Liệt kê các module chính và trách nhiệm của từng cái (vd: Auth, Billing, Media Processing).
+
+5. **Current State & Roadmap (Tiến độ):**
+
+   - Quét toàn bộ codebase tìm `TODO`, `FIXME`, `HACK`.
+   - Đối chiếu giữa file logic hiện có và mục tiêu trong README để biết cái nào đã xong, cái nào đang làm.
+
+6. **Infrastructure & DevOps:**
+   - Tìm file Docker, CI/CD, Script deploy để hiểu cách dự án vận hành thực tế.
+
+**BẮT BUỘC:** Không viết lý thuyết suông. Mỗi mục phải có **file evidence** cụ thể đi kèm.
+
+**OUTPUT TEMPLATE (Sử dụng format này):**
+
+# 🧠 Project Context: [Tên Dự Án]
+
+> Cập nhật cuối: [Ngày tháng năm] - Trạng thái: [WIP/Stable/Legacy]
+
+## 1. 🎯 Tổng quan & Nghiệp vụ (Domain)
+
+- **Mục đích:** [Mô tả ngắn gọn]
+- **Business Logic:** [1-2 đoạn mô tả luồng quan trọng nhất - "Happy Path"]
+- **User Persona:** [Ai là người dùng chính?]
+
+## 2. 🛠️ Hệ sinh thái Công nghệ (Tech Stack)
+
+| Layer     | Technologies        | Usage & Evidence       |
+| --------- | ------------------- | ---------------------- |
+| Runtime   | Node.js 20+         | `package.json`         |
+| Framework | NestJS              | `src/main.ts`          |
+| DB        | PostgreSQL + Prisma | `prisma/schema.prisma` |
+| ...       | ...                 | ...                    |
+
+## 3. 🏗️ Kiến trúc Hệ thống
+
+- **Pattern:** [vd: Hexagonal Architecture / MVC / Monolith]
+- **Data Flow:** [Mô tả ngắn gọn logic đi từ đâu đến đâu]
+- **Key Files:** [Liệt kê 3-5 tệp "trái tim" của toàn hệ thống]
+
+## 4. 📂 Quy hoạch Thư mục (Project Anatomy)
+
+- `src/core/`: Chứa các logic dùng chung...
+- `src/modules/`: Chứa các domain nghiệp vụ tách biệt...
+
+## 5. 🚥 Trạng thái & Lộ trình (Development Status)
+
+- [x] **Hoàn thành:** [Liệt kê các module đã ổn định]
+- [ ] **Đang thực hiện:** [Liệt kê feature đang active]
+- [ ] **Kế hoạch:** [Dựa vào README/TODO]
+
+## 6. 🚧 Technical Debt & Known Issues
+
+- **Issues:** [Liệt kê các bug khó hoặc FIXME quan trọng]
+- **Debt:** [Những phần code đang là "tạm thời", cần refactor]
+
+## 7. ⚙️ Cấu hình & Vận hành
+
+- **Env:** [Các biến quan trọng từ .env.example]
+- **Commands:** [Lệnh run/test/build quan trọng nhất]
 ```
 
 ---
 
 # 🎭 PHẦN 8: MOCKS (Dữ liệu giả)
 
-## Prompt 8.1: Tạo Mock Data
+## Prompt 8.1: Tạo Mock Data - Dữ liệu thực chiến
 
+```markdown
+Phân tích các tệp định nghĩa Types/Interfaces quan trọng nhất (thực thể chính: User, Product, Transaction...) để tạo dữ liệu giả mẫu tại `.agent/mocks/sample-data.json`.
+
+**YÊU CẦU:**
+
+1. Với mỗi thực thể, tạo ít nhất 3 bộ dữ liệu:
+
+   - **Happy Path:** Dữ liệu đầy đủ, chuẩn.
+   - **Minimal Path:** Dữ liệu chỉ có các field bắt buộc.
+   - **Edge Case:** Dữ liệu có chuỗi siêu dài, số âm, null/undefined ở các field optional.
+
+2. Đảm bảo dữ liệu **TRÔNG NHƯ THẬT**: Tên người, email, ngày tháng phải hợp lý.
+3. Dữ liệu phải parse được TypeScript interfaces của dự án.
+
+**MỤC TIÊU:** AI dùng dữ liệu này để viết tests hoặc tạo UI demo nhanh mà không cần đợi API.
 ```
-
-Phân tích types/interfaces trong dự án và tạo mock data.
-
-**Bước 1: Tìm các types chính**
-
-- Quét src/types/ hoặc các file types.ts
-- Xác định entities chính (User, Product, Order...)
-
-**Bước 2: Tạo mock data**
-
-- Với mỗi type, tạo ít nhất 3 mock objects
-- Cover các cases: normal, edge, empty
-
-**Output:**
 
 ```json
 // .agent/mocks/users.json
@@ -787,8 +666,6 @@ Phân tích types/interfaces trong dự án và tạo mock data.
     }
   ]
 }
-```
-
 ```
 
 ---
@@ -873,25 +750,19 @@ Hãy phân tích TOÀN BỘ dự án [Frontend/Backend] này và tạo thư mụ
 
 # 🔍 PHẦN 9: VALIDATION - Kiểm tra kết quả AI tạo ra
 
-## Prompt 9.1: Validate Rules đã tạo
+## Prompt 9.1: Validate Rules - Thẩm định tính thực tế
 
-```
+```markdown
+Hãy kiểm soát chất lượng file `.agent/rules/global.md`. Với mỗi quy tắc bạn đã viết, hãy thực hiện:
 
-Hãy VERIFY lại file `.agent/rules/global.md` vừa tạo.
+1. **Tìm bằng chứng:** Chỉ ra ít nhất 2 file khác nhau đang thực thi quy tắc này.
+2. **Tìm "Kẻ phản bội":** Tìm bất kỳ tệp nào đang vi phạm quy tắc này (Ví dụ: rule "không dùng any" nhưng file X vẫn dùng).
+3. **Chấm điểm:**
+   - [ĐÃ XÁC MINH 100%]: Mọi nơi đều tuân thủ.
+   - [XU THẾ CHÍNH]: Đa số tuân thủ, một vài chỗ cũ chưa refactor.
+   - [AO TƯỞNG]: Quy tắc này không có thực tế trong code, hãy XÓA NÓ.
 
-Với MỖI quy tắc đã viết, hãy:
-
-1. Chỉ ra FILE CỤ THỂ trong codebase là evidence cho quy tắc đó
-2. Nếu không tìm thấy evidence → đánh dấu "[KHÔNG CÓ BẰNG CHỨNG]"
-3. Nếu có evidence mâu thuẫn (code vi phạm quy tắc) → ghi chú "[CÓ VI PHẠM tại file X]"
-
-**Output Format:**
-
-| Quy tắc                      | Evidence File                                             | Status                                    |
-| ---------------------------- | --------------------------------------------------------- | ----------------------------------------- |
-| "Components dùng PascalCase" | src/components/UserProfile.tsx, src/components/Header.tsx | ✅ Confirmed                              |
-| "Không dùng any"             | ---                                                       | ❌ Có vi phạm tại src/utils/helpers.ts:45 |
-
+**Kết quả trả về:** Bảng tổng hợp chi tiết. Nếu quy tắc nào bị loại là "Ảo tưởng", hãy tự động cập nhật lại file rule.
 ```
 
 ---
@@ -1036,70 +907,25 @@ Sau khi hoàn thành, hỏi tôi có muốn tiếp tục với TIER 2 không.
 
 Thêm section này vào đầu mỗi file skill để AI biết khi nào kích hoạt:
 
-## Prompt 12.1: Thêm Trigger Phrases vào Skills
-
-```
-
-Cập nhật các file trong `.agent/skills/` để thêm section "Trigger Phrases".
-
-**Format cho mỗi skill file:**
+## Prompt 12.1: Thêm Trigger Phrases - Kích hoạt tự động
 
 ```markdown
-# Skill: [Tên Skill]
+Duyệt qua tất cả các file trong `.agent/skills/`. Bạn hãy bổ sung một section "Trigger Phrases" vào đầu mỗi file.
 
-## 🎯 Khi nào dùng Skill này?
+**YÊU CẦU TƯ DUY:**
 
-Kích hoạt skill này khi user nói:
+- Nghĩ về những câu hỏi "ngây ngô" nhất mà dev có thể hỏi (vd: "Sao code này đỏ?", "Check giùm cái này").
+- Nghĩ về những tình huống "âm thầm" (vd: AI thấy user paste một đống log lỗi -> tự kích hoạt debug-skill).
 
-- "[trigger phrase 1]"
-- "[trigger phrase 2]"
+**CẤU TRÚC TRIGGER:**
 
-HOẶC khi context cho thấy:
+- **Ngôn ngữ:** Hỗ trợ cả Tiếng Anh và Tiếng Việt.
+- **Context Trigger:** AI phải tự nhận diện tình huống (vd: "Khi thấy user nhắc đến hiệu năng hoặc lag").
 
-- [điều kiện 1]
-- [điều kiện 2]
-```
+**Ví dụ cho performance-skill.md:**
 
-**Ví dụ cho debug-skill.md:**
-
-```markdown
-## 🎯 Khi nào dùng Skill này?
-
-Kích hoạt khi user nói:
-
-- "tại sao lỗi này xảy ra"
-- "debug giúp tôi"
-- "không hiểu tại sao code không chạy"
-- "console báo lỗi"
-- "app crash"
-
-HOẶC khi context cho thấy:
-
-- User paste error message/stack trace
-- User mô tả unexpected behavior
-- User nói "không hoạt động"
-```
-
-**Ví dụ cho review-skill.md:**
-
-```markdown
-## 🎯 Khi nào dùng Skill này?
-
-Kích hoạt khi user nói:
-
-- "review code này"
-- "có vấn đề gì không"
-- "code này ok chưa"
-- "check giúp"
-
-HOẶC khi context cho thấy:
-
-- User paste một đoạn code mới viết
-- User hỏi ý kiến về implementation
-```
-
-Hãy thêm Trigger Phrases phù hợp cho tất cả skill files.
-
+- User hỏi: "Sao nó lag thế?", "Optimize cái này", "Kiểm tra render".
+- Context: Thấy user dùng map lồng nhau, hoặc render list lớn không có key.
 ```
 
 ---
@@ -1163,26 +989,32 @@ Hãy review toàn bộ thư mục `.agent/` và:
 Sau khi chạy xong các prompts, verify:
 
 ## Tier 1 (Must Have)
+
 - [ ] `memory/project-context.md` - Có info về current work?
 - [ ] `rules/global.md` - Có ít nhất 5 categories với examples?
 - [ ] `workflows/create-new-feature.md` - Có folder structure + commands?
 
 ## Tier 2 (Should Have)
+
 - [ ] `checklists/pr-review.md` - Có ít nhất 10 actionable items?
 - [ ] `rules/[domain].md` - Cover main domain của dự án?
 - [ ] `workflows/fix-bug-flow.md` - Có debugging steps cụ thể?
 - [ ] `skills/debug-skill.md` - Có trigger phrases?
 
 ## Tier 3 (Nice to Have)
+
 - [ ] `templates/*.md` - Có real code từ dự án?
 - [ ] `skills/review-skill.md` - Có priority levels?
 - [ ] `docs/architecture.md` - Có diagram (Mermaid)?
 - [ ] `mocks/*.json` - Có edge cases?
 
 ## Quality Checks
+
 - [ ] Mọi rule đều có evidence file từ codebase?
 - [ ] Không có nội dung "lý thuyết suông"?
 - [ ] Skills có trigger phrases?
 - [ ] Workflows có commands thật?
+
+```
 
 ```
